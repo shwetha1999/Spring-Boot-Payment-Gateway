@@ -20,39 +20,14 @@ public class PaypalController {
     @Autowired
     private PaypalService paypalService;
 
-    public static final String successUrl = "http://localhost:8080/pay/success";
-    public static final String cancelUrl = "http://localhost:8080/pay/cancel";
 
     @PostMapping("/pay")
-    public String payment(@ModelAttribute("order") Order theOrder) throws PayPalRESTException {
-        try {
-            Payment thePayment = paypalService.createPayment(theOrder.getPrice(), theOrder.getCurrency(),
-                    theOrder.getMethod(), theOrder.getIntent(), theOrder.getDescription(), cancelUrl, successUrl);
-            for (Links links: thePayment.getLinks()){
-                if(links.getRel().equals("approval_url")){
-                    System.out.println(links.getHref());
-                    return "redirect:"+links.getHref();
-                }
-            }
-        }
-        catch (PayPalRESTException payPalRESTException) {
-            payPalRESTException.printStackTrace();
-        }
-        return "redirect:/";
+    public String pay(){
+        return "message";
     }
 
-    @GetMapping("/success")
-    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
-        try {
-            Payment payment = paypalService.executePayment(paymentId, payerId);
-            System.out.println(payment.toJSON());
-            if (payment.getState().equals("approved")) {
-                return "success";
-            }
-        } catch (PayPalRESTException e) {
-            System.out.println(e.getMessage());
-        }
-        return "redirect:/";
-    }
+
+
+
 
 }
